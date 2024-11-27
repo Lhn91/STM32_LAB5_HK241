@@ -21,7 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "global.h"
+#include "command_parser_fsm.h"
+#include "uart_communication_fsm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,14 +61,18 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t temp = 0;
 
 void HAL_UART_RxCpltCallback ( UART_HandleTypeDef * huart ){
  if(huart -> Instance == USART2 ){
-	 HAL_UART_Transmit (& huart2 , &temp , 1, 50) ;
+	 //HAL_UART_Transmit (& huart2 , &temp , 1, 50) ;
+	 if(temp && command_flag == 0)buffer [ index_buffer ++] = temp ;
+	 command_flag = 0;
+	 if( index_buffer == 30) index_buffer = 0;
+	 buffer_flag = 1;
 	 HAL_UART_Receive_IT (& huart2 , &temp , 1);
   }
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -106,10 +112,20 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  //char str[20];
   while (1)
   {
-	  HAL_GPIO_TogglePin(led_GPIO_Port, led_Pin);
-	  HAL_Delay(500);
+	  //ADC_value = HAL_ADC_GetValue(&hadc1);
+
+	  //HAL_GPIO_TogglePin(led_GPIO_Port, led_Pin);
+
+	  // Chuyển đổi giá trị ADC sang chuỗi và gửi qua UART
+	  if(buffer_flag == 1){
+	command_parser_fsm();
+	  buffer_flag = 0;
+	  }
+	  uart_communication_fsm();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

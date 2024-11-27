@@ -1,0 +1,2 @@
+../Core/Src/command_parser_fsm.c:8:9:validate_command	5
+../Core/Src/command_parser_fsm.c:19:6:command_parser_fsm	7
