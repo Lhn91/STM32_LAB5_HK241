@@ -9,6 +9,8 @@
 #define INC_GLOBAL_H_
 #include "main.h"
 #include "stdio.h"
+#include "command_parser_fsm.h"
+#include "uart_communication_fsm.h"
 #include "string.h"
 #define IDLE       0
 #define RECEIVING  1
@@ -18,6 +20,7 @@
 #define WAIT_ACK   5      // Chờ ACK từ terminal (!OK#)
 #define DONE2       6      // Kết thúc giao tiếp
 #define MAX_BUFFER_SIZE 30
+#define INITIAL_BUFFER_CAPACITY 30
 extern UART_HandleTypeDef huart2; // Khai báo handle UART
 extern char str[20];
 extern uint8_t temp;
@@ -27,9 +30,8 @@ extern uint8_t buffer_flag;
 extern uint8_t command_flag;
 extern uint32_t timeout_start;
 extern uint8_t state;
-extern uint32_t ADC_value; // Biến lưu giá trị ADC
-#define INITIAL_BUFFER_CAPACITY 30
-
+//extern uint32_t ADC_value; // Biến lưu giá trị ADC
+extern ADC_HandleTypeDef hadc1;
 extern uint8_t* dynamic_buffer;
 extern uint16_t buffer_capacity;
 

@@ -1,2 +1,0 @@
-../Core/Src/command_parser_fsm.c:8:9:validate_command	16	static
-../Core/Src/command_parser_fsm.c:19:6:command_parser_fsm	8	static

@@ -62,6 +62,8 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+char debug_str[50];
+uint32_t ADC_value = 0;
 void reset_buffer() {
     memset(dynamic_buffer, 0, buffer_capacity);
     index_buffer = 0;
@@ -99,6 +101,73 @@ void HAL_UART_RxCpltCallback ( UART_HandleTypeDef * huart ){
 	 buffer_flag = 1;
 	 HAL_UART_Receive_IT (& huart2 , &temp , 1);
   }
+}
+
+uint8_t validate_command(uint8_t *buffer) {
+    if (buffer[0] == '!' && buffer[strlen((char *)buffer) - 1] == '#') {
+        if (strncmp((char *)&buffer[1], "RST", strlen("RST")) == 0) {
+            return 1; // Lệnh Reset hợp lệ
+        } else if (strncmp((char *)&buffer[1], "OK", strlen("OK")) == 0) {
+            return 2; // Lệnh OK hợp lệ
+        }
+    }
+    return 0; // Lệnh không hợp lệ
+}
+
+void command_parser_fsm() {
+    switch (state) {
+        case IDLE:
+            if (temp == '!') { // Ký tự bắt đầu lệnh
+                state = RECEIVING;
+            }
+            break;
+
+        case RECEIVING:
+			  // Ký tự kết thúc lệnh
+			if(temp == '#'){
+						//buffer[index_buffer] = '\0';
+				dynamic_buffer[index_buffer] = '#';
+				if (validate_command(dynamic_buffer)) { // Kiểm tra lệnh hợp lệ
+					command_flag = validate_command(dynamic_buffer); // Đặt cờ báo hiệu có lệnh hợp lệ
+					state = RESPONDING;
+				}
+			}
+            break;
+	}
+    HAL_UART_Transmit(&huart2, &temp, 1, 100);
+    //HAL_UART_Transmit(&huart2, &dynamic_buffer[index_buffer], 1, 100);
+
+}
+
+void uart_communication_fsm() {
+    switch (state) {
+        case RESPONDING:
+            if (command_flag == 1) { // Lệnh !RST#
+                command_flag = 0; // Xóa cờ
+                //sprintf(response, "!ADC=%lu#", ADC_value);
+                HAL_UART_Transmit(&huart2, (uint8_t *)debug_str, sprintf (debug_str, "!ADC=%lu\n#", ADC_value ), HAL_MAX_DELAY);
+                timeout_start = HAL_GetTick();
+                state = WAIT_ACK;
+            }
+
+            if (command_flag == 2){
+            	command_flag = 0;
+            	HAL_UART_Transmit(&huart2, (uint8_t *)"end\n", 11, 1000);
+            	free(dynamic_buffer);
+            	state = IDLE;
+            }
+            break;
+
+        case WAIT_ACK:
+            if (HAL_GetTick() - timeout_start > 3000) { // Hết thời gian chờ
+                HAL_UART_Transmit(&huart2, (uint8_t *)debug_str, sprintf (debug_str, "!ADC=%lu\n#", ADC_value ), HAL_MAX_DELAY);
+                timeout_start = HAL_GetTick();
+            }
+            if(buffer_flag == 1){
+            	state = IDLE;
+            }
+            break;
+    }
 }
 
 /* USER CODE END 0 */
@@ -140,13 +209,20 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-  //char str[20];
   init_buffer();
   while (1)
   {
-	  //ADC_value = HAL_ADC_GetValue(&hadc1);
+	  HAL_ADC_Start(&hadc1); // Bắt đầu chuyển đổi ADC
+	      if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK) { // Chờ hoàn thành
+	          ADC_value = HAL_ADC_GetValue(&hadc1); // Đọc giá trị ADC
+	      }
+	      HAL_ADC_Stop(&hadc1); // Dừng ADC nếu không cần dùng liên tục
+	      /*sprintf(debug_str, "ADC Value: %lu\n", ADC_value);
+	         HAL_UART_Transmit(&huart2, (uint8_t *)debug_str, strlen(debug_str), HAL_MAX_DELAY);
 
+	         HAL_Delay(500); // Delay để tránh gửi quá nhanh*/
+	  //HAL_UART_Transmit (& huart2 , ( void *) str , sprintf (str , "%lu\n", ADC_value ), 1000) ;
+	  //HAL_Delay (500);
 	  //HAL_GPIO_TogglePin(led_GPIO_Port, led_Pin);
 
 	  // Chuyển đổi giá trị ADC sang chuỗi và gửi qua UART
