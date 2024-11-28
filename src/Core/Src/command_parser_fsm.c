@@ -37,8 +37,5 @@ void command_parser_fsm() {
             break;
 	}
     HAL_UART_Transmit(&huart2, &temp, 1, 100);
-    //HAL_UART_Transmit(&huart2, &dynamic_buffer[0], 1, 100);
-    //HAL_UART_Transmit(&huart2, &dynamic_buffer[1], 1, 100);
-    //HAL_UART_Transmit(&huart2, &dynamic_buffer[2], 1, 100);
-    //HAL_UART_Transmit(&huart2, &dynamic_buffer[3], 1, 100);
+
 }

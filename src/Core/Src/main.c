@@ -145,11 +145,11 @@ int main(void)
   init_buffer();
   while (1)
   {
-	  //ADC_value = HAL_ADC_GetValue(&hadc1);
-
-	  //HAL_GPIO_TogglePin(led_GPIO_Port, led_Pin);
-
-	  // Chuyển đổi giá trị ADC sang chuỗi và gửi qua UART
+	  HAL_ADC_Start(&hadc1); // Bắt đầu chuyển đổi ADC
+	    if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK) { // Chờ hoàn thành
+	        ADC_value = HAL_ADC_GetValue(&hadc1); // Đọc giá trị ADC
+	    }
+	    HAL_ADC_Stop(&hadc1); // Dừng ADC nếu không cần dùng liên tục
 	  if(buffer_flag == 1){
 	command_parser_fsm();
 	  buffer_flag = 0;

@@ -29,14 +29,14 @@ void uart_communication_fsm() {
             break;
 
         case WAIT_ACK:
-            if (HAL_GetTick() - timeout_start > 3000) { // Hết thời gian chờ
-                HAL_UART_Transmit(&huart2, (uint8_t *)response, sprintf (response , "!ADC=%lu\n#", ADC_value ), HAL_MAX_DELAY);
-                timeout_start = HAL_GetTick();
-            }
-            if(buffer_flag == 1){
-            	state = IDLE;
-            }
-            break;
+                	if(temp == '!' ){
+                	      state = IDLE;
+                	  }
+                	else if (HAL_GetTick() - timeout_start > 3000) { // Hết thời gian chờ
+                        HAL_UART_Transmit(&huart2, (uint8_t *)response, sprintf (response , "!ADC=%lu\n#", ADC_value ), HAL_MAX_DELAY);
+                        timeout_start = HAL_GetTick();
+                    }
+                    break;
     }
 }
 
