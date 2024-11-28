@@ -10,6 +10,8 @@
 #include "main.h"
 #include "stdio.h"
 #include "string.h"
+#include "uart_communication_fsm.h"
+#include "command_parser_fsm.h"
 #define IDLE       0
 #define RECEIVING  1
 #define DONE1       2

@@ -12,6 +12,6 @@
 // Định nghĩa các trạng thái FSM
 
 void command_parser_fsm();
-
+uint8_t validate_command(uint8_t *buffer);
 
 #endif /* INC_COMMAND_PARSER_FSM_H_ */

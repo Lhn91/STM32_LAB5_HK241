@@ -69,6 +69,7 @@ void reset_buffer() {
 
 void init_buffer() {
     dynamic_buffer = (uint8_t*)malloc(buffer_capacity);
+    reset_buffer();
 }
 void resize_buffer() {
     buffer_capacity *= 2; // Tăng gấp đôi dung lượng
@@ -153,7 +154,7 @@ int main(void)
 
 	  if(buffer_flag == 1){
 	command_parser_fsm();
-	  if(state != WAIT_ACK)buffer_flag = 0;
+	  buffer_flag = 0;
 	  }
 	  uart_communication_fsm();
     /* USER CODE END WHILE */
