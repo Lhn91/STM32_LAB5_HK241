@@ -20,29 +20,21 @@ void command_parser_fsm() {
     switch (state) {
         case IDLE:
             if (temp == '!') { // Ký tự bắt đầu lệnh
-            	command_flag = 1;
                 state = RECEIVING;
             }
             break;
 
         case RECEIVING:
-        	if(temp != '!'){
-        		//HAL_UART_Transmit(&huart2, (uint8_t *)"Hello UART\n", 11, 1000);
-        		command_flag = 0;
-        		break;
-        	}
-        	command_flag = 0;
 			  // Ký tự kết thúc lệnh
-					if(temp == '#'){
+			if(temp == '#'){
 						buffer[index_buffer] = '\0';
-						if (validate_command(buffer)) { // Kiểm tra lệnh hợp lệ
-							command_flag = validate_command(buffer); // Đặt cờ báo hiệu có lệnh hợp lệ
-							state = RESPONDING;
-						}
-					 }
-
+				if (validate_command(buffer)) { // Kiểm tra lệnh hợp lệ
+					command_flag = validate_command(buffer); // Đặt cờ báo hiệu có lệnh hợp lệ
+					state = RESPONDING;
+				}
+			}
             break;
-    }
+	}
     HAL_UART_Transmit(&huart2, &temp, 1, 100);
     HAL_UART_Transmit(&huart2, &buffer[0], 1, 100);
     HAL_UART_Transmit(&huart2, &buffer[1], 1, 100);

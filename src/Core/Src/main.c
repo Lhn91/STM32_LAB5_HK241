@@ -65,9 +65,19 @@ static void MX_USART2_UART_Init(void);
 void HAL_UART_RxCpltCallback ( UART_HandleTypeDef * huart ){
  if(huart -> Instance == USART2 ){
 	 //HAL_UART_Transmit (& huart2 , &temp , 1, 50) ;
-	 if(temp && command_flag == 0)buffer [ index_buffer ++] = temp ;
-	 command_flag = 0;
+	 if(temp == '!'){
+		 if(command_flag == 0)
+		 {	 index_buffer = 0;
+			 buffer [index_buffer ++] = temp ;
+			 command_flag = 1;
+		 }
+	 } else {
+		 buffer [index_buffer ++] = temp ;
+		 command_flag = 0;
+	 }
+
 	 if( index_buffer == 30) index_buffer = 0;
+
 	 buffer_flag = 1;
 	 HAL_UART_Receive_IT (& huart2 , &temp , 1);
   }
