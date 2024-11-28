@@ -150,9 +150,10 @@ int main(void)
 	        ADC_value = HAL_ADC_GetValue(&hadc1); // Đọc giá trị ADC
 	    }
 	    HAL_ADC_Stop(&hadc1); // Dừng ADC nếu không cần dùng liên tục
+
 	  if(buffer_flag == 1){
 	command_parser_fsm();
-	  buffer_flag = 0;
+	  if(state != WAIT_ACK)buffer_flag = 0;
 	  }
 	  uart_communication_fsm();
     /* USER CODE END WHILE */
