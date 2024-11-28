@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
 #include "global.h"
 #include "command_parser_fsm.h"
 #include "uart_communication_fsm.h"
@@ -61,23 +62,40 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void reset_buffer() {
+    memset(dynamic_buffer, 0, buffer_capacity);
+    index_buffer = 0;
+}
 
+void init_buffer() {
+    dynamic_buffer = (uint8_t*)malloc(buffer_capacity);
+}
+void resize_buffer() {
+    buffer_capacity *= 2; // Tăng gấp đôi dung lượng
+    dynamic_buffer = (uint8_t*)realloc(dynamic_buffer, buffer_capacity);
+}
 void HAL_UART_RxCpltCallback ( UART_HandleTypeDef * huart ){
  if(huart -> Instance == USART2 ){
 	 //HAL_UART_Transmit (& huart2 , &temp , 1, 50) ;
 	 if(temp == '!'){
 		 if(command_flag == 0)
-		 {	 index_buffer = 0;
-			 buffer [index_buffer ++] = temp ;
+		 {
+		//index_buffer = 0;
+			 //buffer [index_buffer ++] = temp ;
+			 reset_buffer();
+		 dynamic_buffer[index_buffer ++] = temp;
 			 command_flag = 1;
 		 }
 	 } else {
-		 buffer [index_buffer ++] = temp ;
+		 //buffer [index_buffer ++] = temp ;
+		 dynamic_buffer[index_buffer ++] = temp;
 		 command_flag = 0;
 	 }
 
-	 if( index_buffer == 30) index_buffer = 0;
-
+	 //if( index_buffer == 30) index_buffer = 0;
+	 if (index_buffer >= buffer_capacity) {
+	     resize_buffer(); // Tăng kích thước buffer nếu cần
+	 }
 	 buffer_flag = 1;
 	 HAL_UART_Receive_IT (& huart2 , &temp , 1);
   }
@@ -124,6 +142,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   //char str[20];
+  init_buffer();
   while (1)
   {
 	  //ADC_value = HAL_ADC_GetValue(&hadc1);

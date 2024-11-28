@@ -21,6 +21,9 @@ void uart_communication_fsm() {
             }
 
             if (command_flag == 2){
+            	command_flag = 0;
+            	HAL_UART_Transmit(&huart2, (uint8_t *)"end\n", 11, 1000);
+            	reset_buffer();
             	state = IDLE;
             }
             break;

@@ -28,4 +28,9 @@ extern uint8_t command_flag;
 extern uint32_t timeout_start;
 extern uint8_t state;
 extern uint32_t ADC_value; // Biến lưu giá trị ADC
+#define INITIAL_BUFFER_CAPACITY 30
+
+extern uint8_t* dynamic_buffer;
+extern uint16_t buffer_capacity;
+
 #endif /* INC_GLOBAL_H_ */

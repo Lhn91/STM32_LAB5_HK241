@@ -27,17 +27,18 @@ void command_parser_fsm() {
         case RECEIVING:
 			  // Ký tự kết thúc lệnh
 			if(temp == '#'){
-						buffer[index_buffer] = '\0';
-				if (validate_command(buffer)) { // Kiểm tra lệnh hợp lệ
-					command_flag = validate_command(buffer); // Đặt cờ báo hiệu có lệnh hợp lệ
+						//buffer[index_buffer] = '\0';
+				dynamic_buffer[index_buffer] = '\0';
+				if (validate_command(dynamic_buffer)) { // Kiểm tra lệnh hợp lệ
+					command_flag = validate_command(dynamic_buffer); // Đặt cờ báo hiệu có lệnh hợp lệ
 					state = RESPONDING;
 				}
 			}
             break;
 	}
     HAL_UART_Transmit(&huart2, &temp, 1, 100);
-    HAL_UART_Transmit(&huart2, &buffer[0], 1, 100);
-    HAL_UART_Transmit(&huart2, &buffer[1], 1, 100);
-    HAL_UART_Transmit(&huart2, &buffer[2], 1, 100);
-    HAL_UART_Transmit(&huart2, &buffer[3], 1, 100);
+    //HAL_UART_Transmit(&huart2, &dynamic_buffer[0], 1, 100);
+    //HAL_UART_Transmit(&huart2, &dynamic_buffer[1], 1, 100);
+    //HAL_UART_Transmit(&huart2, &dynamic_buffer[2], 1, 100);
+    //HAL_UART_Transmit(&huart2, &dynamic_buffer[3], 1, 100);
 }
