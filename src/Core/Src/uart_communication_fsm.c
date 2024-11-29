@@ -17,13 +17,15 @@ void uart_communication_fsm() {
                 //sprintf(response, "!ADC=%lu#", ADC_value);
                 HAL_UART_Transmit(&huart2, (uint8_t *)response, sprintf (response , "!ADC=%lu\n#", ADC_value ), HAL_MAX_DELAY);
                 timeout_start = HAL_GetTick();
+                temp2 = ADC_value;
                 state = WAIT_ACK;
+
             }
 
             if (command_flag == 2){
             	command_flag = 0;
             	HAL_UART_Transmit(&huart2, (uint8_t *)"END_COM\n", 11, 1000);
-            	reset_buffer();
+            	free(dynamic_buffer);
             	state = IDLE;
             }
             break;
@@ -33,8 +35,8 @@ void uart_communication_fsm() {
             	command_flag = 2;
             	state = RESPONDING;
             }
-            if (HAL_GetTick() - timeout_start > 3000) { // Hết thời gian chờ
-HAL_UART_Transmit(&huart2, (uint8_t *)response, sprintf (response , "!ADC=%lu\n#", ADC_value ), HAL_MAX_DELAY);
+            if (HAL_GetTick() - timeout_start > 2000) { // Hết thời gian chờ
+HAL_UART_Transmit(&huart2, (uint8_t *)response, sprintf (response , "!ADC=%lu\n#",temp2), HAL_MAX_DELAY);
 timeout_start = HAL_GetTick();
                 		}
 

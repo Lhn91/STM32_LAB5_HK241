@@ -17,4 +17,4 @@ uint8_t state = IDLE;
 uint32_t ADC_value = 0;
 uint8_t* dynamic_buffer = NULL;
 uint16_t buffer_capacity = INITIAL_BUFFER_CAPACITY;
-
+uint32_t temp2 = 0;

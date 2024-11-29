@@ -10,6 +10,7 @@
 #include "main.h"
 #include "stdio.h"
 #include "string.h"
+#include <stdlib.h>
 #include "uart_communication_fsm.h"
 #include "command_parser_fsm.h"
 #define IDLE       0
@@ -30,6 +31,7 @@ extern uint8_t command_flag;
 extern uint32_t timeout_start;
 extern uint8_t state;
 extern uint32_t ADC_value; // Biến lưu giá trị ADC
+extern uint32_t temp2;
 #define INITIAL_BUFFER_CAPACITY 30
 
 extern uint8_t* dynamic_buffer;
